@@ -1,0 +1,29 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<repository xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance" xmlns = "http://www.tibco.com/xmlns/repo/types/2002">
+	<globalVariables>
+		<globalVariable>
+			<name>BasePath</name>
+			<value>C:\Users\eramadha\ErizwanR\Project-OCBC\Development\FTP</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1523345591075</modTime>
+		</globalVariable>
+		<globalVariable>
+			<name>FilenamePattern</name>
+			<value>*EBM*ONELOAN*</value>
+			<deploymentSettable>true</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1523346476698</modTime>
+		</globalVariable>
+		<globalVariable>
+			<name>Separator</name>
+			<value>\</value>
+			<deploymentSettable>false</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1523346337888</modTime>
+		</globalVariable>
+	</globalVariables>
+</repository>

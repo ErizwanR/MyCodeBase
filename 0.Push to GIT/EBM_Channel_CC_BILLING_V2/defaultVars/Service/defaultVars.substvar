@@ -1,0 +1,21 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<repository xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance" xmlns = "http://www.tibco.com/xmlns/repo/types/2002">
+	<globalVariables>
+		<globalVariable>
+			<name>EnrichEvent</name>
+			<value>false</value>
+			<deploymentSettable>false</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>Boolean</type>
+			<modTime>1432546388982</modTime>
+		</globalVariable>
+		<globalVariable>
+			<name>EventType</name>
+			<value>CC_BILLING_V2</value>
+			<deploymentSettable>false</deploymentSettable>
+			<serviceSettable>false</serviceSettable>
+			<type>String</type>
+			<modTime>1523441050383</modTime>
+		</globalVariable>
+	</globalVariables>
+</repository>

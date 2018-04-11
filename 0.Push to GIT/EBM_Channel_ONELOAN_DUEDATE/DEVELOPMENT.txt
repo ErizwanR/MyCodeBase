@@ -1,0 +1,21 @@
+$Id: DEVELOPMENT.txt 1564 2015-06-08 07:24:07Z ibutarbu $
+
+====
+TAGS
+====
+
+----------------------------------
+Version 0.8 (1.0-rc1) - 2015.06.05
+----------------------------------
+
+- [REL] Release after UAT Phase 1A
+- [UPD] Ensure CUSTOMER_ID in number format (TRIM and NUMBER)
+- [UPD] Enrich with FIRST_4_DIGIT (UAT)
+
+
+-----------------------
+Version 0.7 (1.0-beta1)
+-----------------------
+
+- [REL] Release for UAT
+

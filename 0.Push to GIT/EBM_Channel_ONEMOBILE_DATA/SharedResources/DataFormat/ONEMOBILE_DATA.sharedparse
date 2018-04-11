@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BWSharedResource xmlns:pfx="http://www.tibco.com/schemas/EBM_Channel_ONELOAN_DUEDATE/SharedResources/Schemas/Schema.xsd" xmlns:pfx2="http://www.tibco.com/schemas/EBM_Channel_ONEMOBILE_DATA/SharedResources/Schemas/Schema.xsd">
+    <import namespace="http://www.tibco.com/schemas/EBM_Channel_ONELOAN_DUEDATE/SharedResources/Schemas/Schema.xsd" schemaLocation="/SharedResources/Schemas/ONELOAN_DUEDATE.xsd"/>
+    <import namespace="http://www.tibco.com/schemas/EBM_Channel_ONEMOBILE_DATA/SharedResources/Schemas/Schema.xsd" schemaLocation="/SharedResources/Schemas/ONEMOBILE_DATA.xsd"/>
+    <name>ONEMOBILE_DATA</name>
+    <resourceType>ae.shared.ParseSharedResource</resourceType>
+    <config xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <FormatType>Delimiter separated</FormatType>
+        <ColumnSeparator>|||||</ColumnSeparator>
+        <ColSeparatorRule>Treat all characters as entered as a single column separator string</ColSeparatorRule>
+        <LineSeparator>
+</LineSeparator>
+        <FillCharacter>Space</FillCharacter>
+        <LineLength>2</LineLength>
+        <DataFormat ref="pfx2:ONEMOBILE_DATA"/>
+    </config>
+</BWSharedResource>

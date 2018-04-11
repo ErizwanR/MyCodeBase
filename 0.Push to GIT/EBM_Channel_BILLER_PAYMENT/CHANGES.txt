@@ -1,0 +1,20 @@
+$Id: CHANGES.txt 1564 2015-06-08 07:24:07Z ibutarbu $
+
+Put here changes implemented on trunk after last TAGGING. 
+For detail change history see DEVELOPMENT.txt
+
+===============
+Version CURRENT
+===============
+
+- none
+
+
+--------
+PREVIOUS
+--------
+
+- v0.8 Release after UAT Phase 1A (2015.06.05)
+       Notes: Formal UAT for Credit Card modules is waiting for CHANNELS readiness.
+- v0.7 Release for UAT
+

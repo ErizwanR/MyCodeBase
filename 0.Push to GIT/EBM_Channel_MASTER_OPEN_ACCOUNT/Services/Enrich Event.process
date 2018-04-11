@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:ns2="http://www.tibco.com/pe/WriteToLogActivitySchema" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ns1="http://psg.tibco.com/schemas/ebm/references/Customer/v1.0" xmlns:ns="http://schemas.gem.com/EBM/Reference" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:pfx="http://www.tibco.com/pe/DeployedVarsType">
+    <pd:name>Services/Enrich Event.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="Enrich-Variables">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element name="CUSTOMER_ID" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="CARD_NO" type="xsd:string" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:startType>
+    <pd:startX>100</pd:startX>
+    <pd:startY>212</pd:startY>
+    <pd:returnBindings>
+        <Enrichment-Results>
+            <CUSTOMER_TYPE>
+                <xsl:value-of select="$Get-Customer/ns1:CUSTOMER/ns1:CUSTOMER_TYPE"/>
+            </CUSTOMER_TYPE>
+            <FIRST_4_DIGIT>
+                <xsl:value-of select="substring($Start/Enrich-Variables/CARD_NO,1,4)"/>
+            </FIRST_4_DIGIT>
+        </Enrichment-Results>
+    </pd:returnBindings>
+    <pd:endName>End</pd:endName>
+    <pd:endType>
+        <xsd:element name="Enrichment-Results">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element name="CUSTOMER_TYPE" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="FIRST_4_DIGIT" type="xsd:string" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:endType>
+    <pd:endX>866</pd:endX>
+    <pd:endY>211</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1426585964058</pd:targetNamespace>
+    <pd:activity name="Get Customer">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>476</pd:x>
+        <pd:y>86</pd:y>
+        <config>
+            <processName>/_Services/References/Get Customer.process</processName>
+        </config>
+        <pd:inputBindings>
+            <CUSTOMER_ID>
+                <xsl:value-of select="$Start/Enrich-Variables/CUSTOMER_ID"/>
+            </CUSTOMER_ID>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>Get Customer</pd:to>
+        <pd:xpathDescription>Perform Enrichment</pd:xpathDescription>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>$_globalVariables/pfx:GlobalVariables/Service/EnrichEvent = 'true'</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Get Customer</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>End</pd:to>
+        <pd:xpathDescription>Skip Enrichment</pd:xpathDescription>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-26368</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>$_globalVariables/pfx:GlobalVariables/Service/EnrichEvent = 'false'</pd:xpath>
+    </pd:transition>
+</pd:ProcessDefinition>

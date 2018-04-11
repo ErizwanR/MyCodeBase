@@ -1,0 +1,599 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:pfx="http://schemas.gem.com/ebm/event/definition/V1.0" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/file" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns0="http://www.tibco.com/namespaces/tnt/plugins/jms" xmlns:ns2="http://www.tibco.com/namespaces/tnt/plugins/file/v2" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns1="http://www.tibco.com/pe/DeployedVarsType" xmlns:ns4="http://www.tibco.com/schemas/EBM_Channel_CC_BILLING/SharedResources/Schemas/Schema.xsd" xmlns:ns3="http://www.tibco.com/pe/WriteToLogActivitySchema" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ns6="http://psg.tibco.com/schemas/ebm/log/EventLog/v1.0" xmlns:ns5="http://www.tibco.com/pe/EngineTypes" xmlns:ns7="http://www.tibco.com/schemas/EBM_Channel_ONELOAN_DUEDATE/SharedResources/Schemas/Schema.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns12="http://psg.tibco.com/schemas/ebm/log/ExceptionLog/v1.0">
+    <xsd:import namespace="http://schemas.gem.com/ebm/event/definition/V1.0" schemaLocation="/_SharedResources/Schemas/GEM/Defenition/EventDefinition.xsd"/>
+    <pd:name>Services/Fetch ONELOAN_DUEDATE.process</pd:name>
+    <pd:startName>File Poller</pd:startName>
+    <pd:startX>0</pd:startX>
+    <pd:startY>0</pd:startY>
+    <pd:returnBindings/>
+    <pd:starter name="File Poller">
+        <pd:type>com.tibco.plugin.file.FileEventSource</pd:type>
+        <pd:resourceType>ae.activities.FileEventSourceResource</pd:resourceType>
+        <pd:x>55</pd:x>
+        <pd:y>112</pd:y>
+        <config>
+            <pollInterval>%%FileManagement/FilePollerInterval_s%%</pollInterval>
+            <createEvent>true</createEvent>
+            <modifyEvent>false</modifyEvent>
+            <deleteEvent>false</deleteEvent>
+            <mode>files-and-directories</mode>
+            <encoding>text</encoding>
+            <sortby>File Name</sortby>
+            <sortorder>descending</sortorder>
+            <fileName>%%FileManagement/BasePath%%%%FileManagement/Separator%%%%FileManagement/InputPath%%%%FileManagement/Separator%%%%FileManagement/FilenamePattern%%%%FileManagement/HeaderExt%%</fileName>
+            <includeCurrent>true</includeCurrent>
+            <excludeContent>true</excludeContent>
+        </config>
+        <pd:inputBindings/>
+    </pd:starter>
+    <pd:endName>End</pd:endName>
+    <pd:endX>1011</pd:endX>
+    <pd:endY>112</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables>
+        <Var>
+            <xsd:element name="root">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="Statistic">
+                            <xsd:complexType>
+                                <xsd:sequence>
+                                    <xsd:element name="StartTimestamp" type="xsd:unsignedLong" minOccurs="0"/>
+                                    <xsd:element name="ProcessingTime" type="xsd:unsignedLong" minOccurs="0"/>
+                                    <xsd:element name="TotaRecords" type="xsd:string" minOccurs="0"/>
+                                </xsd:sequence>
+                            </xsd:complexType>
+                        </xsd:element>
+                        <xsd:element name="File">
+                            <xsd:complexType>
+                                <xsd:sequence>
+                                    <xsd:element name="HeaderFilename" type="xsd:string"/>
+                                    <xsd:element name="DataFilename" type="xsd:string"/>
+                                    <xsd:element name="InProcessFilename" type="xsd:string"/>
+                                    <xsd:element name="SuccessFilename" type="xsd:string"/>
+                                    <xsd:element name="ErrorFilename" type="xsd:string"/>
+                                </xsd:sequence>
+                            </xsd:complexType>
+                        </xsd:element>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </Var>
+    </pd:processVariables>
+    <pd:targetNamespace>http://xmlns.example.com/1425868974040</pd:targetNamespace>
+    <pd:group name="Looping By Customer Group">
+        <pd:type>com.tibco.pe.core.LoopGroup</pd:type>
+        <pd:resourceType>ae.process.group</pd:resourceType>
+        <pd:x>517</pd:x>
+        <pd:y>21</pd:y>
+        <pd:width>181</pd:width>
+        <pd:height>168</pd:height>
+        <pd:collapsedWidth>57</pd:collapsedWidth>
+        <pd:collapsedHeight>70</pd:collapsedHeight>
+        <pd:groupVariables/>
+        <pd:joinToggle>inherit</pd:joinToggle>
+        <config>
+            <pd:groupType>inputLoop</pd:groupType>
+            <pd:serializable>false</pd:serializable>
+            <pd:over>$Process-File/root/CustomerGroup</pd:over>
+            <pd:iterationElementSlot>customergroup</pd:iterationElementSlot>
+            <pd:indexSlot>l</pd:indexSlot>
+            <pd:activityOutputName/>
+            <pd:accumulateOutput>false</pd:accumulateOutput>
+        </config>
+        <pd:inputBindings/>
+        <pd:expanded>true</pd:expanded>
+        <pd:transition>
+            <pd:from>start</pd:from>
+            <pd:to>Send  to Eligibility Engine</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>Send  to Eligibility Engine</pd:from>
+            <pd:to>end</pd:to>
+            <pd:lineType>Curved</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:activity name="Send  to Eligibility Engine">
+            <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+            <pd:resourceType>ae.process.subprocess</pd:resourceType>
+            <pd:x>599</pd:x>
+            <pd:y>121</pd:y>
+            <config>
+                <processName>/_Services/Send Batch Event to Engine.process</processName>
+            </config>
+            <pd:inputBindings>
+                <pfx:EventDefinitions>
+                    <pfx:IDENTIFIER>
+                        <xsl:value-of select="$customergroup/CustomerGroup/@CUSTOMER_ID"/>
+                    </pfx:IDENTIFIER>
+                    <xsl:for-each select="$Process-File/root/CustomerGroup/ns7:ONELOAN_DUEDATE">
+                        <pfx:EventDefinition>
+                            <pfx:IDENTIFIER>
+                                <xsl:value-of select="ns7:CUSTOMER_ID"/>
+                            </pfx:IDENTIFIER>
+                            <pfx:EVENT_TYPE>
+                                <xsl:value-of select="$_globalVariables/ns1:GlobalVariables/Service/EventType"/>
+                            </pfx:EVENT_TYPE>
+                            <pfx:OCCURRED_ON>
+                                <xsl:value-of select="tib:format-dateTime(&quot;yyyy-MM-dd HH:mm:ss&quot;, current-dateTime())"/>
+                            </pfx:OCCURRED_ON>
+                            <pfx:TRACKED_ON>
+                                <xsl:value-of select="tib:format-dateTime(&quot;yyyy-MM-dd HH:mm:ss&quot;, current-dateTime())"/>
+                            </pfx:TRACKED_ON>
+                            <pfx:UNIQUE_ID>
+                                <xsl:value-of select="ns7:UNIQUE_ID"/>
+                            </pfx:UNIQUE_ID>
+                            <pfx:FIELD1>
+                                <xsl:value-of select="ns7:CUSTOMER_ID"/>
+                            </pfx:FIELD1>
+                            <pfx:FIELD2>
+                                <xsl:value-of select="ns7:ACCOUNT_NO"/>
+                            </pfx:FIELD2>
+                            <pfx:FIELD3>
+                                <xsl:value-of select="ns7:CURRENCY"/>
+                            </pfx:FIELD3>
+                            <pfx:FIELD4>
+                                <xsl:value-of select="ns7:AMOUNT"/>
+                            </pfx:FIELD4>
+                            <pfx:FIELD5>
+                                <xsl:value-of select="ns7:BILLING_DATE"/>
+                            </pfx:FIELD5>
+                            <pfx:FIELD6>
+                                <xsl:value-of select="ns7:DUE_DATE"/>
+                            </pfx:FIELD6>
+                            <pfx:FIELD7>
+                                <xsl:value-of select="ns7:OUTSTANDING_AMOUNT"/>
+                            </pfx:FIELD7>
+                            <pfx:FIELD8>
+                                <xsl:value-of select="ns7:DPD"/>
+                            </pfx:FIELD8>
+                            <pfx:FIELD9>
+                                <xsl:value-of select="ns7:PRODUCT_GROUP"/>
+                            </pfx:FIELD9>
+                            <pfx:FIELD10>
+                                <xsl:value-of select="ns7:PRODUCT_CODE"/>
+                            </pfx:FIELD10>
+                            <pfx:FIELD11>
+                                <xsl:value-of select="ns7:FIRST_PAYMENT_DATE"/>
+                            </pfx:FIELD11>
+                            <pfx:FIELD12>
+                                <xsl:value-of select="ns7:PAYMENT_CODE"/>
+                            </pfx:FIELD12>
+                            <pfx:FIELD13>
+                                <xsl:value-of select="ns7:CMS_ID_CODE"/>
+                            </pfx:FIELD13>
+                            <pfx:FIELD14>
+                                <xsl:value-of select="ns7:LOAN_GROUP"/>
+                            </pfx:FIELD14>
+                        </pfx:EventDefinition>
+                    </xsl:for-each>
+                </pfx:EventDefinitions>
+            </pd:inputBindings>
+        </pd:activity>
+    </pd:group>
+    <pd:activity name="Assign">
+        <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+        <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+        <pd:x>182</pd:x>
+        <pd:y>112</pd:y>
+        <config>
+            <variableName>Var</variableName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <Statistic>
+                    <StartTimestamp>
+                        <xsl:value-of select="tib:timestamp()"/>
+                    </StartTimestamp>
+                </Statistic>
+                <File>
+                    <HeaderFilename>
+                        <xsl:value-of select="$File-Poller/ns:EventSourceOuputNoContentClass/fileInfo/fileName"/>
+                    </HeaderFilename>
+                    <DataFilename>
+                        <xsl:value-of select="concat(substring-before($File-Poller/ns:EventSourceOuputNoContentClass/fileInfo/fileName, $_globalVariables/ns1:GlobalVariables/FileManagement/HeaderExt),$_globalVariables/ns1:GlobalVariables/FileManagement/DataExt)"/>
+                    </DataFilename>
+                    <InProcessFilename>
+                        <xsl:value-of select="concat(substring-before($File-Poller/ns:EventSourceOuputNoContentClass/fileInfo/fileName, $_globalVariables/ns1:GlobalVariables/FileManagement/HeaderExt),$_globalVariables/ns1:GlobalVariables/FileManagement/DataExt,$_globalVariables/ns1:GlobalVariables/FileManagement/InProcessExt)"/>
+                    </InProcessFilename>
+                    <SuccessFilename>
+                        <xsl:value-of select="concat(substring-before($File-Poller/ns:EventSourceOuputNoContentClass/fileInfo/fileName, $_globalVariables/ns1:GlobalVariables/FileManagement/HeaderExt),$_globalVariables/ns1:GlobalVariables/FileManagement/DataExt,$_globalVariables/ns1:GlobalVariables/FileManagement/SuccessExt)"/>
+                    </SuccessFilename>
+                    <ErrorFilename>
+                        <xsl:value-of select="concat(substring-before($File-Poller/ns:EventSourceOuputNoContentClass/fileInfo/fileName, $_globalVariables/ns1:GlobalVariables/FileManagement/HeaderExt),$_globalVariables/ns1:GlobalVariables/FileManagement/DataExt,$_globalVariables/ns1:GlobalVariables/FileManagement/ErrorExt)"/>
+                    </ErrorFilename>
+                </File>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Assign Completed">
+        <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+        <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+        <pd:x>786</pd:x>
+        <pd:y>112</pd:y>
+        <config>
+            <variableName>Var</variableName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <Statistic>
+                    <xsl:if test="$Var/root/Statistic/StartTimestamp">
+                        <StartTimestamp>
+                            <xsl:value-of select="$Var/root/Statistic/StartTimestamp"/>
+                        </StartTimestamp>
+                    </xsl:if>
+                    <ProcessingTime>
+                        <xsl:value-of select="tib:timestamp()-$Var/root/Statistic/StartTimestamp"/>
+                    </ProcessingTime>
+                    <TotaRecords>
+                        <xsl:value-of select="$Process-File/root/TotalRecordCount"/>
+                    </TotaRecords>
+                </Statistic>
+                <File>
+                    <HeaderFilename>
+                        <xsl:value-of select="$Var/root/File/HeaderFilename"/>
+                    </HeaderFilename>
+                    <DataFilename>
+                        <xsl:value-of select="$Var/root/File/DataFilename"/>
+                    </DataFilename>
+                    <InProcessFilename>
+                        <xsl:value-of select="$Var/root/File/InProcessFilename"/>
+                    </InProcessFilename>
+                    <SuccessFilename>
+                        <xsl:value-of select="$Var/root/File/SuccessFilename"/>
+                    </SuccessFilename>
+                    <ErrorFilename>
+                        <xsl:value-of select="$Var/root/File/ErrorFilename"/>
+                    </ErrorFilename>
+                </File>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Assign Completed (Catch)">
+        <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+        <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+        <pd:x>890</pd:x>
+        <pd:y>280</pd:y>
+        <config>
+            <variableName>Var</variableName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <Statistic>
+                    <xsl:if test="$Var/root/Statistic/StartTimestamp">
+                        <StartTimestamp>
+                            <xsl:value-of select="$Var/root/Statistic/StartTimestamp"/>
+                        </StartTimestamp>
+                    </xsl:if>
+                    <ProcessingTime>
+                        <xsl:value-of select="tib:timestamp()-$Var/root/Statistic/StartTimestamp"/>
+                    </ProcessingTime>
+                    <xsl:choose>
+                        <xsl:when test="string-length(tib:trim($Process-File/root/TotalRecordCount)) > 0">
+                            <TotaRecords>
+                                <xsl:value-of select="$Process-File/root/TotalRecordCount"/>
+                            </TotaRecords>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <TotaRecords>
+                                <xsl:value-of select="0"/>
+                            </TotaRecords>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </Statistic>
+                <File>
+                    <HeaderFilename>
+                        <xsl:value-of select="$Var/root/File/HeaderFilename"/>
+                    </HeaderFilename>
+                    <DataFilename>
+                        <xsl:value-of select="$Var/root/File/DataFilename"/>
+                    </DataFilename>
+                    <InProcessFilename>
+                        <xsl:value-of select="$Var/root/File/InProcessFilename"/>
+                    </InProcessFilename>
+                    <SuccessFilename>
+                        <xsl:value-of select="$Var/root/File/SuccessFilename"/>
+                    </SuccessFilename>
+                    <ErrorFilename>
+                        <xsl:value-of select="$Var/root/File/ErrorFilename"/>
+                    </ErrorFilename>
+                </File>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Catch">
+        <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
+        <pd:resourceType>ae.activities.catch</pd:resourceType>
+        <pd:x>551</pd:x>
+        <pd:y>273</pd:y>
+        <pd:handler>true</pd:handler>
+        <config>
+            <catchAll>true</catchAll>
+        </config>
+        <pd:inputBindings/>
+    </pd:activity>
+    <pd:activity name="Log Completed">
+        <pd:type>com.tibco.pe.core.WriteToLogActivity</pd:type>
+        <pd:resourceType>ae.activities.log</pd:resourceType>
+        <pd:x>903</pd:x>
+        <pd:y>112</pd:y>
+        <config>
+            <role>INFO</role>
+            <suppressHeader>true</suppressHeader>
+        </config>
+        <pd:inputBindings>
+            <ns3:ActivityInput>
+                <message>
+                    <xsl:value-of select="concat(&quot;[&quot;, $_globalVariables/ns1:GlobalVariables/Service/EventType, &quot;] Finish File : &quot;, $Var/root/File/DataFilename,&quot;, Total Records : &quot;,$Var/root/Statistic/TotaRecords,&quot; within &quot;, $Var/root/Statistic/ProcessingTime,&quot; ms&quot;)"/>
+                </message>
+                <msgCode>
+                    <xsl:value-of select="&quot;FINISH&quot;"/>
+                </msgCode>
+            </ns3:ActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Log Completed (Catch)">
+        <pd:type>com.tibco.pe.core.WriteToLogActivity</pd:type>
+        <pd:resourceType>ae.activities.log</pd:resourceType>
+        <pd:x>1010</pd:x>
+        <pd:y>280</pd:y>
+        <config>
+            <role>INFO</role>
+            <suppressHeader>true</suppressHeader>
+        </config>
+        <pd:inputBindings>
+            <ns3:ActivityInput>
+                <message>
+                    <xsl:value-of select="concat(&quot;[&quot;, $_globalVariables/ns1:GlobalVariables/Service/EventType, &quot;] Finish from exception for File : &quot;, $Var/root/File/DataFilename,&quot;, Total Records : &quot;,$Var/root/Statistic/TotaRecords,&quot; within &quot;, $Var/root/Statistic/ProcessingTime,&quot; ms&quot;)"/>
+                </message>
+                <msgCode>
+                    <xsl:value-of select="&quot;FINISH&quot;"/>
+                </msgCode>
+            </ns3:ActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Log Exception">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>696</pd:x>
+        <pd:y>273</pd:y>
+        <config>
+            <processName>/_Services/Logs/Log Event Exception.process</processName>
+        </config>
+        <pd:inputBindings>
+            <LogInput>
+                <ns6:EventLog>
+                    <ns6:EVENT_TYPE>
+                        <xsl:value-of select="$_globalVariables/ns1:GlobalVariables/Service/EventType"/>
+                    </ns6:EVENT_TYPE>
+                    <ns6:IDENTIFIER>
+                        <xsl:value-of select="$Var/root/File/DataFilename"/>
+                    </ns6:IDENTIFIER>
+                    <ns6:OCCURRED_ON>
+                        <xsl:value-of select="$Var/root/Statistic/StartTimestamp"/>
+                    </ns6:OCCURRED_ON>
+                    <ns6:TRACKED_ON>
+                        <xsl:value-of select="$Var/root/Statistic/StartTimestamp"/>
+                    </ns6:TRACKED_ON>
+                    <ns6:UNIQUE_ID>
+                        <xsl:value-of select="$Var/root/File/DataFilename"/>
+                    </ns6:UNIQUE_ID>
+                </ns6:EventLog>
+                <ns12:ExceptionLog>
+                    <ns12:Message>
+                        <xsl:value-of select="$_error/ns5:ErrorReport/Msg"/>
+                    </ns12:Message>
+                    <xsl:if test="$_error/ns5:ErrorReport/FullClass">
+                        <ns12:Class>
+                            <xsl:value-of select="$_error/ns5:ErrorReport/FullClass"/>
+                        </ns12:Class>
+                    </xsl:if>
+                    <xsl:if test="exists($_error/ns5:ErrorReport)">
+                        <ns12:ErrorReport>
+                            <xsl:value-of select="tib:render-xml($_error/ns5:ErrorReport)"/>
+                        </ns12:ErrorReport>
+                    </xsl:if>
+                </ns12:ExceptionLog>
+            </LogInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Log Started">
+        <pd:type>com.tibco.pe.core.WriteToLogActivity</pd:type>
+        <pd:resourceType>ae.activities.log</pd:resourceType>
+        <pd:x>289</pd:x>
+        <pd:y>112</pd:y>
+        <config>
+            <role>INFO</role>
+            <suppressHeader>true</suppressHeader>
+        </config>
+        <pd:inputBindings>
+            <ns3:ActivityInput>
+                <message>
+                    <xsl:value-of select="concat(&quot;[&quot;, $_globalVariables/ns1:GlobalVariables/Service/EventType, &quot;] Found File : &quot;, $File-Poller/ns:EventSourceOuputNoContentClass/fileInfo/fileName, &quot; in &quot;, $File-Poller/ns:EventSourceOuputNoContentClass/fileInfo/location)"/>
+                </message>
+                <msgCode>
+                    <xsl:value-of select="&quot;START&quot;"/>
+                </msgCode>
+            </ns3:ActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Process File">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>421</pd:x>
+        <pd:y>115</pd:y>
+        <config>
+            <processName>/Services/Reference/Process File (1).process</processName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <HeaderFilename>
+                    <xsl:value-of select="$Var/root/File/HeaderFilename"/>
+                </HeaderFilename>
+                <DataFilename>
+                    <xsl:value-of select="$Var/root/File/DataFilename"/>
+                </DataFilename>
+                <InProcessFilename>
+                    <xsl:value-of select="$Var/root/File/InProcessFilename"/>
+                </InProcessFilename>
+                <SuccessFilename>
+                    <xsl:value-of select="$Var/root/File/SuccessFilename"/>
+                </SuccessFilename>
+                <ErrorFilename>
+                    <xsl:value-of select="$Var/root/File/ErrorFilename"/>
+                </ErrorFilename>
+            </root>
+        </pd:inputBindings>
+        <pd:iconImage>/9j/4AAQSkZJRgABAQEAYABgAAD//gA8Q1JFQVRPUjogZ2QtanBlZyB2MS4wICh1c2luZyBJSkcg&#xD;
+SlBFRyB2NjIpLCBxdWFsaXR5ID0gNzUKAP/bAEMAAgEBAgEBAgICAgICAgIDBQMDAwMDBgQEAwUH&#xD;
+BgcHBwYHBwgJCwkICAoIBwcKDQoKCwwMDAwHCQ4PDQwOCwwMDP/bAEMBAgICAwMDBgMDBgwIBwgM&#xD;
+DAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDP/AABEIAEsA&#xD;
+SwMBIgACEQEDEQH/xAAfAAABBQEBAQEBAQAAAAAAAAAAAQIDBAUGBwgJCgv/xAC1EAACAQMDAgQD&#xD;
+BQUEBAAAAX0BAgMABBEFEiExQQYTUWEHInEUMoGRoQgjQrHBFVLR8CQzYnKCCQoWFxgZGiUmJygp&#xD;
+KjQ1Njc4OTpDREVGR0hJSlNUVVZXWFlaY2RlZmdoaWpzdHV2d3h5eoOEhYaHiImKkpOUlZaXmJma&#xD;
+oqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4eLj5OXm5+jp6vHy8/T19vf4+fr/&#xD;
+xAAfAQADAQEBAQEBAQEBAAAAAAAAAQIDBAUGBwgJCgv/xAC1EQACAQIEBAMEBwUEBAABAncAAQID&#xD;
+EQQFITEGEkFRB2FxEyIygQgUQpGhscEJIzNS8BVictEKFiQ04SXxFxgZGiYnKCkqNTY3ODk6Q0RF&#xD;
+RkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqCg4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqy&#xD;
+s7S1tre4ubrCw8TFxsfIycrS09TV1tfY2dri4+Tl5ufo6ery8/T19vf4+fr/2gAMAwEAAhEDEQA/&#xD;
+AP37++tJ5a+lEf3KGfGR3x6UAOA20U1G3L+leN/txftl+Hv2LvgrfeINTurGXXLhfs+iaVJOqTan&#xD;
+csQqhV+8UTO9yBwqnuQDnWrQpQdSo7JbndluW4nH4qGDwkXKpNpJLu/yS3beiV29EeqeKPGWkeCN&#xD;
+Le+1rVNP0mzjBLT3lwkMYwMnliBXOfCX9ovwR8dr3Vrfwf4k03xBJobol79kYssJcEr82AGB2typ&#xD;
+IyCM5Ffil400f41/tDXN34z8Uab4htdPu5vtDaz4qd9Ptykjbs2kNxiSSIKcolvGU2gBeMV3HwF/&#xD;
+af1D9kXT9WsfCGtTNqHiQwRXV5PFGZZjHv2LDFhtmTI3GXY8c16HB/D+fcR1faYPDqnh4uznOVlt&#xD;
+dW6t7XsnZbvYrxg4g4A8O8D9Vx+ZSxeaTScKGHgpJe8lJzk3yxVuZR5pQlJrSDSlb9qqK+df2Ivi&#xD;
+j4i079n+O5+I1xrMevXV9NLDBqoZb2O3ITYHV/nXneQHAIB6DivevDniCLxJosd9HlYZckbvYkH+&#xD;
+VeTiMzy6Oa1cow2JhWqU735HzKyaTd1pu1pe58/keMr5hlVDNKtCVFVYp8s1ZxbV7PzNCio7a6jv&#xD;
+IRJDIksbZwyNuBxweakrqPQTTV0YHxK+J3h/4M+B77xJ4p1ey0PQ9NVWub27k2RRbmCKM9yzsqhR&#xD;
+klmAAJNeKa7+3RqfiiGX/hX/AMNfEmsW5j8yLXfErL4b0Pbg/vN0wa8kRcZJjtWG3oTVP/gptq1x&#xD;
+4V8E/C3XoZGjh0b4k6I9wf4QkzyW2T9GnX8cV8J+A9Ivv+ChXxf8fz+PvGV1peg+Hb65lXSkJS1S&#xD;
+1jmKkbdwUuqgDfISq4yySbvl5Yxr18Q8PSdrK7eyS095u0na7UUlCTv5Xt9VRw+X4HKlm2OjzJvl&#xD;
+6yvJt2hCHPRTlywlUcp16cFHSzlZT9r+M37flxDqLWHir4yTx3gQmbwx8K9JjeZhwfmvrkST4HGX&#xD;
+QW3UcjpXl3gLxx44+I11JqXwd+Eun+Go5vlfxX4jnfW9WYnni8u5ZM8Ho9yB1wrHCnc8IP8AD34f&#xD;
+QXGk/Cr4byeNprGUCS/1IRCyjlUZBeWYQ2ayDOcBA/PGMkHuNY+G/wASfjCTe+OvGTaHpUgwYdJZ&#xD;
+rdj7efco0xGcfcthuGQGz8w9WplOCwVTkzCr+9X2NXNX6OEXOrFPpKcsPF+R+f1PFLG5lRdPh3C8&#xD;
+1J6c65XSbW0lNxo4aXnF0sdKy0lJM8j8f/BS18OJNqHxs+M19rGpXsweW00pkLzNu4hRnjVY/mbG&#xD;
+2KAszEAu21Meofs56H4T+H8c2oeFfhrNo2rMNllFdWz3ethMBmup5J2eS33HARSYxjcwQL5ZPSeE&#xD;
+PhR4K+BudQsNPt7W9mj2yaldmSFpFwRgMxe8lBBIOH2HvsBUHG1L43yeM92h+CdHvfFU0BOLa1hF&#xD;
+tpluepZsMkaHJ+9NKoOfuk818hxhxrQxuX/6u4WrUUHo4U2pVJK95R5IN06bb+KU6taUk3s3c8XK&#xD;
+8oo5Zmn+sWfex9vU1ScW3JpJLlbj7WqoJJRp4ehSjCMUlHkjyln4l/F7UPC1lPcapq9jZXSjMWn2&#xD;
+ji6uc54818eXGOv3TJngDknHjXjz9t3xV40gsfDK61ql1FNmG00rT02tck8kbIhvlPc7t2M9hxXU&#xD;
++K/gFBrEsV38T/Gn2Wzhy8WheH2Gc/7U2wqAccrDHuwPv5IzLpvxc0r4TaTcab8O/Dum+Fbe5UR3&#xD;
+F0qFry8A+60khYvIRyQXYgE529c/mP8Aq1hMAvaVpLBwaty8znVmt9bW0dlppFWV03q/wnxw4ox+&#xD;
+dY1rijOPqOXR+DD0/wCNVX88qUHe0npH2jajFLmipOR9vfsD6XeeHv2XvD9hqlvLYatbtcvd2kx/&#xD;
+e2xkuZXQMuTtJjZDj39c17LX5mfsvahqnxF/aj8GrLdXd1MmoC4ZjJjYkatI2B0AwpyB1r9Mwc1+&#xD;
+lcJ5pQxeD9nhYyVOlaCcrXajFau2l9j9G8FeM8Fn+RezyyhOnh8Jy0IOo1zTUKcPekoq0XZq6Tff&#xD;
+S9l88/8ABVrw1P4k/YB+Iklru+1aBb2viKHaPm3adeQX2PbP2cgnsCa/MX4aavLoPxg+PVjYyMkc&#xD;
+7a69uV43R/b45YyPYxIx+ma/Zz4x+Bo/if8ACPxR4bmRJI/EGk3WnMr/AHSJoXj5/wC+q/DH4H+I&#xD;
+LgeP7qS6bdd634L2XuRy96mhyJN+dyHNfZ8O1vY8RYdy2mpJ/wDbkZVF98oxR+7cSYT694b5pTj8&#xD;
+WHlTqL/uLVoUG/lTlUfyZ93fsl+JbLSPgP4Wsobe3t/L0618q5VBvtt9r9pnkX1Z5TKxwRl3LE5z&#xD;
+mKfx14s+Jt9cN4L0eG2s4ZDC/iDVLvasbjh9kpVnLchf3KDJO0sOQOG/ZOvpb/4H6Cr/AH/s0kAA&#xD;
+PQRyXsK/+ORr+dYvw6+Jep+F/wBm24021upIXuvEl7Y3Ei/fVV2ykK3VSQQMjnaxHGa/IuIG6mfY&#xD;
+zLcxqSVCh7eU4xdueccRVhJyf2ubl6u19dLtn5bxBxNSybhjA5pBunSlhnVlKCi5qFKhh5Rp0+ZN&#xD;
+Qc/av3o8s04x5Zw1Z2Gu+E/B3g6/kuPGHiC++IWs7t7WfNtYkjnDwK7tIh6YndkYZO1hlTj+Kv2h&#xD;
+9SvdMTTdIgtPDujwjbFZ2UKRxoPZFAReM8YOASMkE587lumkLY43Ek+5PNRkZ6818hX4uqUqf1fK&#xD;
+accPT/u6yfrJ6/dr5n8D8VfSCz/MZVIZOlg4T+KUW515/wCOvO82+zXLJbczRPdapNeztLJJNNM3&#xD;
+LSSuXkc+pZuSfc1Afm6802R9v1qKS42Z+bt6V8pOc6knObbb3b1Z+F1alStUlWrScpSd222233be&#xD;
+rZ9Nf8EvPB/9tfHXVNWkjDQaLpLqrc5SaaRVUj/tmsw/Gvvmvln/AIJT+EDYfCLXdedfm1nU/JiY&#xD;
+jlo4EA4Ppvdx9Qa+pq/fuB8H9Xyem3vO8n83p/5Kkf6ffR7yN5bwNg1NWlV5qj/7fk+X/wAkUQPN&#xD;
+fkf8c/8Agmn46/Zv8f8AjD4mapfeG08C2Pi55LGG2lkkujpmoalgbwVCx+RFclDy27bkY7/rhXM/&#xD;
+GT4SaJ8ePhZr3g7xHbtdaJ4is3sruNG2vtYfeU9mU4YHnBA619pg/ZQxtDFVb2pyT07bP106H7hi&#xD;
+MwxsMox2WYNpfWabg+ZXWmsddba9Urrda2Z+Zf7Dt8brwf8AY2z/AKPdXUeP+Ah/5ymubtrX+y/C&#xD;
+fiSzPytb+PtRcKeyPp9iV/XfX1l8XP2ZPBv7Id74Jj8Lae2m6VqL3tpfXdxM00lxOYhMkk0znrth&#xD;
+dVGQBkgAV8qeOkm0Xx/42sLi3urVzq9rqCRXMLwSBZrQ4OxgGAIRSMjkYPpX4zx5mFPE8X5liMNF&#xD;
+qE4TevRznOpra6u+a+5+F+LmT18q8JcLh8a1KpTpzotrbSilpdJ7UUtjKqGa6VBwf/rVVvdVWJWy&#xD;
+20AZJziu0+AX7MHjr9qC9VvDem/ZdCz+812/VorAYO0iI4zOwIIIjyAQQzKa/O8HgK+KqKlh4uUn&#xD;
+0X9aLzeh/nDw/wAL5nneLjgssoyq1H0ivxb2S7ttJdWcLqGtxWEe6STaMhfdiTgD3J6ADvXvH7O3&#xD;
+/BOjxv8AHY2+peJPtHgfwvLtkVpo1OqX0R6mKFs+TxwGmXIOD5bjr9bfsy/sA+Cf2dTa6nJD/wAJ&#xD;
+R4tgG7+2dQhBa3cjBNtFkrbggsMqS+GILsK90r9WyPw9hC1XMnzP+VbfN7v0Wnmz+0vDn6L+DwnL&#xD;
+jeKZe1nv7KL9xf4pLWXorLzkjnfhP8LdH+C3w80vwvoMElvpWkxGOFXcySMWZnd2Y9WZ2Zie5Y9K&#xD;
+6Kiiv0unTjTioQVklZJbJLZI/rTD4elQpRoUYqMIpJJKySSskktklokFH3RQxwpoY4U1ZsV7vTbb&#xD;
+UzCbi3huDbyCWLzED+U4BAZc9GAJGRzya/Pn9vv9nLx/4x/bbuJPCvhPVNcsPF2h2UwvoE22tvcW&#xD;
+7ywuksrYjQ7GRvmYEjGAT0/Q6mr95q8vNspp4+h7Co2le+lr7NW1v0Z8nxpwjheJcu/szGSlGDab&#xD;
+cbX2aaV00rptXtpe58jfs3/8EqNE8IS2usfEi6t/FmrxlJk0u33rpNpIDnnIV7nHT94qoR1j6Y+t&#xD;
+7Ozh060jt7eGOCCFBHHHGoVI1AwAAOAAOwqSitMuyvC4Gn7LCwUV17v1e7OrhnhPKOH8KsHlFCNK&#xD;
+HW28n3lJ6yfm2/LQKKKK9A+iCiiigD//2Q==&#xD;
+</pd:iconImage>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>File Poller</pd:from>
+        <pd:to>Assign</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Log Completed</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Assign</pd:from>
+        <pd:to>Log Started</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Assign Completed</pd:from>
+        <pd:to>Log Completed</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Looping By Customer Group</pd:from>
+        <pd:to>Assign Completed</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Log Started</pd:from>
+        <pd:to>Process File</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Process File</pd:from>
+        <pd:to>Looping By Customer Group</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Catch</pd:from>
+        <pd:to>Log Exception</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Log Exception</pd:from>
+        <pd:to>Assign Completed (Catch)</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Assign Completed (Catch)</pd:from>
+        <pd:to>Log Completed (Catch)</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Log Completed (Catch)</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:ns2="http://www.tibco.com/namespaces/tnt/plugins/jms" xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ns="http://www.tibco.com/pe/DeployedVarsType" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions">
+    <pd:name>Stubs/Send Event.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startX>150</pd:startX>
+    <pd:startY>64</pd:startY>
+    <pd:returnBindings/>
+    <pd:endName>End</pd:endName>
+    <pd:endX>450</pd:endX>
+    <pd:endY>64</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1426591205141</pd:targetNamespace>
+    <pd:activity name="JMS Queue Sender">
+        <pd:type>com.tibco.plugin.jms.JMSQueueSendActivity</pd:type>
+        <pd:resourceType>ae.activities.JMSQueueSendActivity</pd:resourceType>
+        <pd:x>288</pd:x>
+        <pd:y>62</pd:y>
+        <config>
+            <PermittedMessageType>Text</PermittedMessageType>
+            <SessionAttributes>
+                <transacted>false</transacted>
+                <acknowledgeMode>1</acknowledgeMode>
+                <maxSessions>1</maxSessions>
+                <destination>%%JMS/Destinations/EVENT.Q.PREFIX%%%%Service/EventType%%</destination>
+            </SessionAttributes>
+            <ConfigurableHeaders>
+                <JMSDeliveryMode>PERSISTENT</JMSDeliveryMode>
+                <JMSExpiration>0</JMSExpiration>
+                <JMSPriority>4</JMSPriority>
+            </ConfigurableHeaders>
+            <ConnectionReference>/_SharedResources/Connections/JMS/JMS.Connection.EVENT.sharedjmscon</ConnectionReference>
+            <ApplicationProperties>/SharedResources/JMSProperties/CC_ACTIVATION.sharedjmsapp</ApplicationProperties>
+        </config>
+        <pd:inputBindings>
+            <ns2:ActivityInput>
+                <OtherProperties>
+                    <EVENT_TYPE>
+                        <xsl:value-of select="$_globalVariables/ns:GlobalVariables/Service/EventType"/>
+                    </EVENT_TYPE>
+                    <OCCURRED_ON>
+                        <xsl:value-of select="tib:format-dateTime(&quot;yyyy-MM-dd HH:mm:ss&quot;, current-dateTime())"/>
+                    </OCCURRED_ON>
+                    <CUSTOMER_ID>
+                        <xsl:value-of select="&quot;CUST001&quot;"/>
+                    </CUSTOMER_ID>
+                    <CARD_NO>
+                        <xsl:value-of select="&quot;5413001&quot;"/>
+                    </CARD_NO>
+                    <ACTIVATION_DATE>
+                        <xsl:value-of select="&quot;2015-03-01&quot;"/>
+                    </ACTIVATION_DATE>
+                </OtherProperties>
+                <Body>
+                    <xsl:value-of select="&quot;&quot;"/>
+                </Body>
+            </ns2:ActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>JMS Queue Sender</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>JMS Queue Sender</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

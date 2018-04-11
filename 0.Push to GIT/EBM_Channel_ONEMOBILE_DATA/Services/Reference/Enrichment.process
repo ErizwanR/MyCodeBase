@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:pd="http://xmlns.tibco.com/bw/process/2003" xmlns:ns1="http://www.tibco.com/pe/WriteToLogActivitySchema" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ns="http://schemas.gem.com/EBM/Reference" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:pfx3="http://www.tibco.com/pe/DeployedVarsType" xmlns:pfx2="http://www.tibco.com/schemas/EBM_Channel_CC_BILLING/SharedResources/Schemas/Schema.xsd" xmlns:pfx="http://schemas.gem.com/ebm/event/definition/V1.0">
+    <xsd:import namespace="http://schemas.gem.com/ebm/event/definition/V1.0" schemaLocation="/_SharedResources/Schemas/GEM/Defenition/EventDefinition.xsd"/>
+    <xsd:import namespace="http://www.tibco.com/schemas/EBM_Channel_CC_BILLING/SharedResources/Schemas/Schema.xsd" schemaLocation="/SharedResources/Schemas/CC_BILLING.xsd"/>
+    <pd:name>Services/Reference/Enrichment.process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="root">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element ref="pfx2:CC_BILLING"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:startType>
+    <pd:startX>98</pd:startX>
+    <pd:startY>256</pd:startY>
+    <pd:returnBindings>
+        <root>
+            <xsl:for-each select="$Start/root/pfx2:CC_BILLING">
+                <pfx2:CC_BILLING>
+                    <pfx2:CARD_NO>
+                        <xsl:value-of select="pfx2:CARD_NO"/>
+                    </pfx2:CARD_NO>
+                    <pfx2:CUSTOMER_ID>
+                        <xsl:value-of select="pfx2:CUSTOMER_ID"/>
+                    </pfx2:CUSTOMER_ID>
+                    <pfx2:AMOUNT>
+                        <xsl:value-of select="pfx2:AMOUNT"/>
+                    </pfx2:AMOUNT>
+                    <pfx2:DUE_DATE>
+                        <xsl:value-of select="pfx2:DUE_DATE"/>
+                    </pfx2:DUE_DATE>
+                    <pfx2:MIN_PAYMENT>
+                        <xsl:value-of select="pfx2:MIN_PAYMENT"/>
+                    </pfx2:MIN_PAYMENT>
+                    <pfx2:FIRST_4_DIGIT>
+                        <xsl:value-of select="substring(pfx2:CARD_NO,1,4)"/>
+                    </pfx2:FIRST_4_DIGIT>
+                    <xsl:if test="pfx2:UNIQUE_ID">
+                        <pfx2:UNIQUE_ID>
+                            <xsl:value-of select="pfx2:UNIQUE_ID"/>
+                        </pfx2:UNIQUE_ID>
+                    </xsl:if>
+                </pfx2:CC_BILLING>
+            </xsl:for-each>
+        </root>
+    </pd:returnBindings>
+    <pd:endName>End</pd:endName>
+    <pd:endType>
+        <xsd:element name="root">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element ref="pfx2:CC_BILLING"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:endType>
+    <pd:endX>784</pd:endX>
+    <pd:endY>254</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1427098782989</pd:targetNamespace>
+    <pd:activity name="Get Account">
+        <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+        <pd:resourceType>ae.process.subprocess</pd:resourceType>
+        <pd:x>439</pd:x>
+        <pd:y>143</pd:y>
+        <config>
+            <processName>/_Services/References/Get Account.process</processName>
+        </config>
+        <pd:inputBindings>
+            <ACCOUNT_NO>
+                <xsl:value-of select="$Start/root/pfx2:CC_BILLING/pfx2:CARD_NO"/>
+            </ACCOUNT_NO>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>End</pd:to>
+        <pd:xpathDescription>Skip Enrichment</pd:xpathDescription>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-26368</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>$_globalVariables/pfx3:GlobalVariables/Service/EnrichEvent = 'false'</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>Get Account</pd:to>
+        <pd:xpathDescription>Perform Enrichment</pd:xpathDescription>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>xpath</pd:conditionType>
+        <pd:xpath>$_globalVariables/pfx3:GlobalVariables/Service/EnrichEvent = 'true'</pd:xpath>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Get Account</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Repository:repository xmlns:Repository="http://www.tibco.com/xmlns/repo/types/2002">
+    <enterpriseArchive>
+        <sharedArchive name="Shared Archive">
+            <resourceType>shared.archive.resource</resourceType>
+            <authorProperty>ibutarbu</authorProperty>
+        </sharedArchive>
+        <processArchive name="Process Archive">
+            <resourceType>process.archive.resource</resourceType>
+            <authorProperty>tibco</authorProperty>
+            <processProperty>/Services/Process Event.process</processProperty>
+        </processArchive>
+        <versionProperty>9</versionProperty>
+        <authorProperty>tibco</authorProperty>
+        <addServiceSettableGvars>true</addServiceSettableGvars>
+        <name>EBM_Channel_CC_ACTIVATION</name>
+        <designer>
+            <lockedProperties/>
+            <fixedChildren/>
+            <resourceDescriptions/>
+        </designer>
+        <fileLocationProperty>./EBM_Channel_CC_ACTIVATION/Deployments/EBM_Channel_CC_ACTIVATION.ear</fileLocationProperty>
+    </enterpriseArchive>
+</Repository:repository>

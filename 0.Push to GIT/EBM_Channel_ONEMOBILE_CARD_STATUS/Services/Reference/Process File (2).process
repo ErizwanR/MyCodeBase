@@ -1,0 +1,700 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:pfx="http://www.tibco.com/schemas/EBM_Channel_CC_BILLING/SharedResources/Schemas/Schema.xsd" xmlns:ns="http://www.tibco.com/pe/DeployedVarsType" xmlns:psg="java://Utilities2" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns0="http://www.tibco.com/namespaces/tnt/plugins/jms" xmlns:ns2="http://www.tibco.com/pe/WriteToLogActivitySchema" xmlns:tib="http://www.tibco.com/bw/xslt/custom-functions" xmlns:ns1="http://www.tibco.com/pe/EngineTypes" xmlns:ns4="http://www.tibco.com/pe/GenerateErrorActivity/InputSchema" xmlns:ns3="http://www.tibco.com/namespaces/tnt/plugins/file" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ns6="http://www.tibco.com/schemas/EBM_Channel_ONEMOBILE_DATA/SharedResources/Schemas/Schema.xsd" xmlns:ns5="http://www.tibco.com/schemas/EBM_Channel_ONELOAN_DUEDATE/SharedResources/Schemas/Schema.xsd" xmlns:pd="http://xmlns.tibco.com/bw/process/2003">
+    <xsd:import namespace="http://www.tibco.com/schemas/EBM_Channel_CC_BILLING/SharedResources/Schemas/Schema.xsd" schemaLocation="/SharedResources/Schemas/CC_BILLING.xsd"/>
+    <xsd:import namespace="http://www.tibco.com/schemas/EBM_Channel_ONELOAN_DUEDATE/SharedResources/Schemas/Schema.xsd" schemaLocation="/SharedResources/Schemas/ONELOAN_DUEDATE.xsd"/>
+    <xsd:import namespace="http://www.tibco.com/schemas/EBM_Channel_ONEMOBILE_DATA/SharedResources/Schemas/Schema.xsd" schemaLocation="/SharedResources/Schemas/ONEMOBILE_DATA.xsd"/>
+    <pd:name>Services/Reference/Process File (2).process</pd:name>
+    <pd:startName>Start</pd:startName>
+    <pd:startType>
+        <xsd:element name="root">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element name="HeaderFilename" type="xsd:string"/>
+                    <xsd:element name="DataFilename" type="xsd:string"/>
+                    <xsd:element name="InProcessFilename" type="xsd:string"/>
+                    <xsd:element name="SuccessFilename" type="xsd:string"/>
+                    <xsd:element name="ErrorFilename" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:startType>
+    <pd:startX>89</pd:startX>
+    <pd:startY>49</pd:startY>
+    <pd:returnBindings>
+        <root>
+            <xsl:copy-of select="$Grouping/root/CustomerGroup"/>
+            <TotalRecordCount>
+                <xsl:value-of select="(($i - 1) * $_globalVariables/ns:GlobalVariables/FileManagement/RecordChunk) + $j"/>
+            </TotalRecordCount>
+        </root>
+    </pd:returnBindings>
+    <pd:endName>End</pd:endName>
+    <pd:endType>
+        <xsd:element name="root">
+            <xsd:complexType>
+                <xsd:sequence>
+                    <xsd:element name="CustomerGroup" minOccurs="0" maxOccurs="unbounded">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element ref="ns6:ONEMOBILE_DATA" minOccurs="0" maxOccurs="unbounded"/>
+                            </xsd:sequence>
+                            <xsd:attribute name="CUSTOMER_ID" type="xsd:string" use="required"/>
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="TotalRecordCount" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:complexType>
+        </xsd:element>
+    </pd:endType>
+    <pd:endX>844</pd:endX>
+    <pd:endY>480</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables/>
+    <pd:targetNamespace>http://xmlns.example.com/1427086894204</pd:targetNamespace>
+    <pd:activity name="Move to Output Folder">
+        <pd:type>com.tibco.plugin.file.FileRenameActivity</pd:type>
+        <pd:resourceType>ae.activities.FileRenameActivity</pd:resourceType>
+        <pd:x>618</pd:x>
+        <pd:y>482</pd:y>
+        <config>
+            <overwrite>true</overwrite>
+            <createMissingDirectories>true</createMissingDirectories>
+        </config>
+        <pd:inputBindings>
+            <ns3:RenameActivityConfig>
+                <fromFileName>
+                    <xsl:value-of select="concat($_globalVariables/ns:GlobalVariables/FileManagement/BasePath,$_globalVariables/ns:GlobalVariables/FileManagement/Separator,$_globalVariables/ns:GlobalVariables/FileManagement/InProcessPath,$_globalVariables/ns:GlobalVariables/FileManagement/Separator,$Start/root/SuccessFilename)"/>
+                </fromFileName>
+                <toFileName>
+                    <xsl:value-of select="concat($_globalVariables/ns:GlobalVariables/FileManagement/BasePath,$_globalVariables/ns:GlobalVariables/FileManagement/Separator,$_globalVariables/ns:GlobalVariables/FileManagement/OutputPath,$_globalVariables/ns:GlobalVariables/FileManagement/Separator,$Start/root/SuccessFilename)"/>
+                </toFileName>
+            </ns3:RenameActivityConfig>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Move to InProcess Folder (Data)">
+        <pd:type>com.tibco.plugin.file.FileRenameActivity</pd:type>
+        <pd:resourceType>ae.activities.FileRenameActivity</pd:resourceType>
+        <pd:x>89</pd:x>
+        <pd:y>360</pd:y>
+        <config>
+            <overwrite>true</overwrite>
+            <createMissingDirectories>true</createMissingDirectories>
+        </config>
+        <pd:inputBindings>
+            <ns3:RenameActivityConfig>
+                <fromFileName>
+                    <xsl:value-of select="concat($_globalVariables/ns:GlobalVariables/FileManagement/BasePath,$_globalVariables/ns:GlobalVariables/FileManagement/Separator,$_globalVariables/ns:GlobalVariables/FileManagement/InputPath,$_globalVariables/ns:GlobalVariables/FileManagement/Separator,$Start/root/DataFilename)"/>
+                </fromFileName>
+                <toFileName>
+                    <xsl:value-of select="concat($_globalVariables/ns:GlobalVariables/FileManagement/BasePath,$_globalVariables/ns:GlobalVariables/FileManagement/Separator,$_globalVariables/ns:GlobalVariables/FileManagement/InProcessPath,$_globalVariables/ns:GlobalVariables/FileManagement/Separator,$Start/root/InProcessFilename)"/>
+                </toFileName>
+            </ns3:RenameActivityConfig>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Remove File">
+        <pd:type>com.tibco.plugin.file.FileRemoveActivity</pd:type>
+        <pd:resourceType>ae.activities.FileRemoveActivity</pd:resourceType>
+        <pd:x>88</pd:x>
+        <pd:y>147</pd:y>
+        <config/>
+        <pd:inputBindings>
+            <ns3:RemoveActivityInputClass>
+                <fileName>
+                    <xsl:value-of select="concat($_globalVariables/ns:GlobalVariables/FileManagement/BasePath,$_globalVariables/ns:GlobalVariables/FileManagement/Separator,$_globalVariables/ns:GlobalVariables/FileManagement/InputPath,$_globalVariables/ns:GlobalVariables/FileManagement/Separator,$Start/root/HeaderFilename)"/>
+                </fileName>
+            </ns3:RemoveActivityInputClass>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Log InProcess">
+        <pd:type>com.tibco.pe.core.WriteToLogActivity</pd:type>
+        <pd:resourceType>ae.activities.log</pd:resourceType>
+        <pd:x>89</pd:x>
+        <pd:y>244</pd:y>
+        <config>
+            <role>INFO</role>
+            <suppressHeader>true</suppressHeader>
+        </config>
+        <pd:inputBindings>
+            <ns2:ActivityInput>
+                <message>
+                    <xsl:value-of select="concat(&quot;Processing File : &quot;, $Start/root/DataFilename)"/>
+                </message>
+                <msgCode>
+                    <xsl:value-of select="$_globalVariables/ns:GlobalVariables/Service/EventType"/>
+                </msgCode>
+            </ns2:ActivityInput>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Parse Success File">
+        <pd:type>com.tibco.plugin.parse.ParseActivity</pd:type>
+        <pd:resourceType>ae.activities.ParseActivity</pd:resourceType>
+        <pd:x>388</pd:x>
+        <pd:y>476</pd:y>
+        <config>
+            <InputType>File</InputType>
+            <Encoding>ASCII</Encoding>
+            <ParseSharedConfig>/SharedResources/DataFormat/ONEMOBILE_DATA.sharedparse</ParseSharedConfig>
+            <SkipBlankLines>true</SkipBlankLines>
+            <ContinueonError>true</ContinueonError>
+        </config>
+        <pd:inputBindings>
+            <Input>
+                <fileName>
+                    <xsl:value-of select="concat($_globalVariables/ns:GlobalVariables/FileManagement/BasePath,$_globalVariables/ns:GlobalVariables/FileManagement/Separator,$_globalVariables/ns:GlobalVariables/FileManagement/InProcessPath, $_globalVariables/ns:GlobalVariables/FileManagement/Separator,$Start/root/SuccessFilename)"/>
+                </fileName>
+                <noOfRecords>
+                    <xsl:value-of select="-1"/>
+                </noOfRecords>
+            </Input>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Grouping">
+        <pd:type>com.tibco.plugin.mapper.MapperActivity</pd:type>
+        <pd:resourceType>ae.activities.MapperActivity</pd:resourceType>
+        <pd:x>726</pd:x>
+        <pd:y>479</pd:y>
+        <config>
+            <element>
+                <xsd:element name="root">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="CustomerGroup" minOccurs="0" maxOccurs="unbounded">
+                                <xsd:complexType>
+                                    <xsd:sequence>
+                                        <xsd:element ref="ns6:ONEMOBILE_DATA" minOccurs="0" maxOccurs="unbounded"/>
+                                    </xsd:sequence>
+                                    <xsd:attribute name="CUSTOMER_ID" type="xsd:string" use="required"/>
+                                </xsd:complexType>
+                            </xsd:element>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </element>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <xsl:for-each-group select="$Parse-Success-File/Output/Rows/ns6:ONEMOBILE_DATA" group-by="psg:removeLeadingChar(tib:trim(ns6:CUSTOMER_ID),&quot;0&quot;)">
+                    <CustomerGroup>
+                        <xsl:attribute name="CUSTOMER_ID">
+                            <xsl:value-of select="psg:removeLeadingChar(tib:trim(ns6:CUSTOMER_ID),&quot;0&quot;)"/>
+                        </xsl:attribute>
+                        <xsl:for-each select="current-group()">
+                            <ns6:ONEMOBILE_DATA>
+                                <ns6:CUSTOMER_ID>
+                                    <xsl:value-of select="psg:removeLeadingChar(tib:trim(ns6:CUSTOMER_ID),&quot;0&quot;)"/>
+                                </ns6:CUSTOMER_ID>
+                                <ns6:ACCOUNT_NO>
+                                    <xsl:value-of select="ns6:ACCOUNT_NO"/>
+                                </ns6:ACCOUNT_NO>
+                                <ns6:ACCOUNT_STATUS>
+                                    <xsl:value-of select="ns6:ACCOUNT_STATUS"/>
+                                </ns6:ACCOUNT_STATUS>
+                                <ns6:CREATED_DATE>
+                                    <xsl:value-of select="tib:parse-date(&quot;yyyyMMdd&quot;,ns6:CREATED_DATE)"/>
+                                </ns6:CREATED_DATE>
+                                <ns6:STATUS_CODE>
+                                    <xsl:value-of select="ns6:STATUS_CODE"/>
+                                </ns6:STATUS_CODE>
+                                <ns6:DESCRIPTION>
+                                    <xsl:value-of select="ns6:DESCRIPTION"/>
+                                </ns6:DESCRIPTION>
+                                <xsl:if test="ns6:UNIQUE_ID">
+                                    <ns6:UNIQUE_ID>
+                                        <xsl:value-of select="ns6:UNIQUE_ID"/>
+                                    </ns6:UNIQUE_ID>
+                                </xsl:if>
+                            </ns6:ONEMOBILE_DATA>
+                        </xsl:for-each>
+                    </CustomerGroup>
+                </xsl:for-each-group>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Remove InProcess File">
+        <pd:type>com.tibco.plugin.file.FileRemoveActivity</pd:type>
+        <pd:resourceType>ae.activities.FileRemoveActivity</pd:resourceType>
+        <pd:x>511</pd:x>
+        <pd:y>482</pd:y>
+        <config/>
+        <pd:inputBindings>
+            <ns3:RemoveActivityInputClass>
+                <fileName>
+                    <xsl:value-of select="$Move-to-InProcess-Folder-Data/ns3:RenameActivityOutput/fileInfo/fullName"/>
+                </fileName>
+            </ns3:RemoveActivityInputClass>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:group name="Validate File">
+        <pd:type>com.tibco.pe.core.LoopGroup</pd:type>
+        <pd:resourceType>ae.process.group</pd:resourceType>
+        <pd:x>286</pd:x>
+        <pd:y>1</pd:y>
+        <pd:width>690</pd:width>
+        <pd:height>401</pd:height>
+        <pd:collapsedWidth>57</pd:collapsedWidth>
+        <pd:collapsedHeight>70</pd:collapsedHeight>
+        <pd:groupVariables/>
+        <pd:joinToggle>inherit</pd:joinToggle>
+        <config>
+            <pd:groupType>repeat</pd:groupType>
+            <pd:serializable>false</pd:serializable>
+            <pd:indexSlot>i</pd:indexSlot>
+            <pd:activityOutputName/>
+            <pd:repeatCondition>$Line-Parser/Output/EOF="true"</pd:repeatCondition>
+            <pd:accumulateOutput>false</pd:accumulateOutput>
+        </config>
+        <pd:inputBindings/>
+        <pd:expanded>true</pd:expanded>
+        <pd:transition>
+            <pd:from>start</pd:from>
+            <pd:to>Line Parser</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>Validate Record</pd:from>
+            <pd:to>end</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:transition>
+            <pd:from>Line Parser</pd:from>
+            <pd:to>Validate Record</pd:to>
+            <pd:lineType>Default</pd:lineType>
+            <pd:lineColor>-16777216</pd:lineColor>
+            <pd:conditionType>always</pd:conditionType>
+        </pd:transition>
+        <pd:activity name="Line Parser">
+            <pd:type>com.tibco.plugin.parse.ParseActivity</pd:type>
+            <pd:resourceType>ae.activities.ParseActivity</pd:resourceType>
+            <pd:x>366</pd:x>
+            <pd:y>205</pd:y>
+            <config>
+                <InputType>File</InputType>
+                <Encoding>ASCII</Encoding>
+                <ParseSharedConfig>/_SharedResources/DataFormat/RAWDATA.sharedparse</ParseSharedConfig>
+                <SkipBlankLines>true</SkipBlankLines>
+                <ContinueonError>true</ContinueonError>
+                <SpecifyStartRecord>true</SpecifyStartRecord>
+            </config>
+            <pd:inputBindings excludePrefixes="">
+                <Input>
+                    <fileName>
+                        <xsl:value-of select="$Move-to-InProcess-Folder-Data/ns3:RenameActivityOutput/fileInfo/fullName"/>
+                    </fileName>
+                    <startRecord>
+                        <xsl:value-of select="( ($i - 1 ) * $_globalVariables/ns:GlobalVariables/FileManagement/RecordChunk ) +1"/>
+                    </startRecord>
+                    <noOfRecords>
+                        <xsl:value-of select="$_globalVariables/ns:GlobalVariables/FileManagement/RecordChunk"/>
+                    </noOfRecords>
+                </Input>
+            </pd:inputBindings>
+        </pd:activity>
+        <pd:group name="Validate Record">
+            <pd:type>com.tibco.pe.core.LoopGroup</pd:type>
+            <pd:resourceType>ae.process.group</pd:resourceType>
+            <pd:x>423</pd:x>
+            <pd:y>32</pd:y>
+            <pd:width>512</pd:width>
+            <pd:height>330</pd:height>
+            <pd:collapsedWidth>57</pd:collapsedWidth>
+            <pd:collapsedHeight>70</pd:collapsedHeight>
+            <pd:groupVariables/>
+            <pd:joinToggle>inherit</pd:joinToggle>
+            <config>
+                <pd:groupType>inputLoop</pd:groupType>
+                <pd:serializable>false</pd:serializable>
+                <pd:over>$Line-Parser/Output/Rows/root</pd:over>
+                <pd:iterationElementSlot>cleanrow</pd:iterationElementSlot>
+                <pd:indexSlot>j</pd:indexSlot>
+                <pd:activityOutputName/>
+                <pd:accumulateOutput>false</pd:accumulateOutput>
+            </config>
+            <pd:inputBindings/>
+            <pd:expanded>true</pd:expanded>
+            <pd:transition>
+                <pd:from>start</pd:from>
+                <pd:to>Parse Data</pd:to>
+                <pd:lineType>Default</pd:lineType>
+                <pd:lineColor>-16777216</pd:lineColor>
+                <pd:conditionType>always</pd:conditionType>
+            </pd:transition>
+            <pd:transition>
+                <pd:from>Send to Error Queue (Catch)</pd:from>
+                <pd:to>end</pd:to>
+                <pd:lineType>S-Shaped</pd:lineType>
+                <pd:lineColor>-65536</pd:lineColor>
+                <pd:conditionType>always</pd:conditionType>
+            </pd:transition>
+            <pd:transition>
+                <pd:from>Write Success Record</pd:from>
+                <pd:to>end</pd:to>
+                <pd:lineType>Multiple Bends</pd:lineType>
+                <pd:lineColor>-16776961</pd:lineColor>
+                <pd:conditionType>always</pd:conditionType>
+            </pd:transition>
+            <pd:transition>
+                <pd:from>Parse Data</pd:from>
+                <pd:to>Generate Error</pd:to>
+                <pd:xpathDescription>Incomplete Record Found</pd:xpathDescription>
+                <pd:lineType>Multiple Bends</pd:lineType>
+                <pd:lineColor>-52429</pd:lineColor>
+                <pd:conditionType>xpath</pd:conditionType>
+                <pd:xpath>exists($Parse-Data/Output/ErrorRows/ErrorString)</pd:xpath>
+            </pd:transition>
+            <pd:transition>
+                <pd:from>Parse Data</pd:from>
+                <pd:to>Enrichment</pd:to>
+                <pd:xpathDescription>Success</pd:xpathDescription>
+                <pd:lineType>Multiple Bends</pd:lineType>
+                <pd:lineColor>-13421569</pd:lineColor>
+                <pd:conditionType>otherwise</pd:conditionType>
+            </pd:transition>
+            <pd:transition>
+                <pd:from>Catch All</pd:from>
+                <pd:to>Send to Error Queue (Catch)</pd:to>
+                <pd:xpathDescription>Catch Error</pd:xpathDescription>
+                <pd:lineType>Default</pd:lineType>
+                <pd:lineColor>-65536</pd:lineColor>
+                <pd:conditionType>always</pd:conditionType>
+            </pd:transition>
+            <pd:transition>
+                <pd:from>Enrichment</pd:from>
+                <pd:to>Write Success Record</pd:to>
+                <pd:lineType>Default</pd:lineType>
+                <pd:lineColor>-13421569</pd:lineColor>
+                <pd:conditionType>always</pd:conditionType>
+            </pd:transition>
+            <pd:activity name="Parse Data">
+                <pd:type>com.tibco.plugin.parse.ParseActivity</pd:type>
+                <pd:resourceType>ae.activities.ParseActivity</pd:resourceType>
+                <pd:x>502</pd:x>
+                <pd:y>207</pd:y>
+                <config>
+                    <InputType>String</InputType>
+                    <Encoding>ASCII</Encoding>
+                    <ParseSharedConfig>/SharedResources/DataFormat/ONEMOBILE_DATA.sharedparse</ParseSharedConfig>
+                    <SkipBlankLines>true</SkipBlankLines>
+                    <ContinueonError>true</ContinueonError>
+                    <SpecifyStartRecord>false</SpecifyStartRecord>
+                </config>
+                <pd:inputBindings excludePrefixes="">
+                    <Input>
+                        <text>
+                            <xsl:value-of select="$cleanrow/root/RAWDATA"/>
+                        </text>
+                        <noOfRecords>
+                            <xsl:value-of select="-1"/>
+                        </noOfRecords>
+                    </Input>
+                </pd:inputBindings>
+            </pd:activity>
+            <pd:activity name="Catch All">
+                <pd:type>com.tibco.pe.core.CatchActivity</pd:type>
+                <pd:resourceType>ae.activities.catch</pd:resourceType>
+                <pd:x>486</pd:x>
+                <pd:y>287</pd:y>
+                <pd:handler>true</pd:handler>
+                <config>
+                    <catchAll>true</catchAll>
+                </config>
+                <pd:inputBindings/>
+            </pd:activity>
+            <pd:activity name="Write Success Record">
+                <pd:type>com.tibco.plugin.file.FileWriteActivity</pd:type>
+                <pd:resourceType>ae.activities.FileWriteActivity</pd:resourceType>
+                <pd:x>839</pd:x>
+                <pd:y>130</pd:y>
+                <config>
+                    <encoding>text</encoding>
+                    <compressFile>None</compressFile>
+                    <createMissingDirectories>true</createMissingDirectories>
+                    <append>true</append>
+                </config>
+                <pd:inputBindings>
+                    <ns3:WriteActivityInputTextClass>
+                        <fileName>
+                            <xsl:value-of select="concat($_globalVariables/ns:GlobalVariables/FileManagement/BasePath,$_globalVariables/ns:GlobalVariables/FileManagement/Separator,$_globalVariables/ns:GlobalVariables/FileManagement/InProcessPath, $_globalVariables/ns:GlobalVariables/FileManagement/Separator,$Start/root/SuccessFilename)"/>
+                        </fileName>
+                        <textContent>
+                            <xsl:value-of select="concat($cleanrow/root/RAWDATA,$_globalVariables/ns:GlobalVariables/FileManagement/ColumnSeparator,$Enrichment/root/ns6:ONEMOBILE_DATA/ns6:ACCOUNT_NO,$_globalVariables/ns:GlobalVariables/FileManagement/ColumnSeparator,concat($Start/root/DataFilename,&quot;_&quot;,( ($i - 1 ) * $_globalVariables/ns:GlobalVariables/FileManagement/RecordChunk ) + $j))"/>
+                        </textContent>
+                        <addLineSeparator>
+                            <xsl:value-of select="&quot;true&quot;"/>
+                        </addLineSeparator>
+                        <encoding>
+                            <xsl:value-of select="&quot;UTF-8&quot;"/>
+                        </encoding>
+                    </ns3:WriteActivityInputTextClass>
+                </pd:inputBindings>
+            </pd:activity>
+            <pd:activity name="Send to Error Queue (Catch)">
+                <pd:type>com.tibco.plugin.jms.JMSQueueSendActivity</pd:type>
+                <pd:resourceType>ae.activities.JMSQueueSendActivity</pd:resourceType>
+                <pd:x>835</pd:x>
+                <pd:y>295</pd:y>
+                <config>
+                    <PermittedMessageType>Text</PermittedMessageType>
+                    <SessionAttributes>
+                        <transacted>false</transacted>
+                        <acknowledgeMode>1</acknowledgeMode>
+                        <maxSessions>1</maxSessions>
+                    </SessionAttributes>
+                    <ConfigurableHeaders>
+                        <JMSDeliveryMode>PERSISTENT</JMSDeliveryMode>
+                        <JMSExpiration>0</JMSExpiration>
+                        <JMSPriority>4</JMSPriority>
+                    </ConfigurableHeaders>
+                    <ConnectionReference>/_SharedResources/Connections/JMS/JMS.Connection.LOG.sharedjmscon</ConnectionReference>
+                    <ApplicationProperties>/_SharedResources/JMSProperties/Logs/Error Event Batch.sharedjmsapp</ApplicationProperties>
+                </config>
+                <pd:inputBindings>
+                    <ns0:ActivityInput>
+                        <destinationQueue>
+                            <xsl:value-of select="$_globalVariables/ns:GlobalVariables/JMS/Destinations/LOG.Q.EVENT.ERROR.BATCH"/>
+                        </destinationQueue>
+                        <OtherProperties>
+                            <Filename>
+                                <xsl:value-of select="$Start/root/DataFilename"/>
+                            </Filename>
+                            <RowNum>
+                                <xsl:value-of select="( ($i - 1 ) * $_globalVariables/ns:GlobalVariables/FileManagement/RecordChunk ) + $j"/>
+                            </RowNum>
+                            <RawData>
+                                <xsl:value-of select="$cleanrow/root/RAWDATA"/>
+                            </RawData>
+                            <Timestamp>
+                                <xsl:value-of select="tib:format-dateTime(&quot;yyyy-MM-dd HH:mm:ss&quot;,current-dateTime())"/>
+                            </Timestamp>
+                            <UniqueID>
+                                <xsl:value-of select="concat($Start/root/DataFilename,&quot;_&quot;,( ($i - 1 ) * $_globalVariables/ns:GlobalVariables/FileManagement/RecordChunk ) + $j)"/>
+                            </UniqueID>
+                        </OtherProperties>
+                        <Body>
+                            <xsl:value-of select="tib:render-xml($_error/ns1:ErrorReport)"/>
+                        </Body>
+                    </ns0:ActivityInput>
+                </pd:inputBindings>
+            </pd:activity>
+            <pd:activity name="Enrichment">
+                <pd:type>com.tibco.pe.core.CallProcessActivity</pd:type>
+                <pd:resourceType>ae.process.subprocess</pd:resourceType>
+                <pd:x>723</pd:x>
+                <pd:y>120</pd:y>
+                <config>
+                    <processName>/Services/Reference/Enrichment (2).process</processName>
+                </config>
+                <pd:inputBindings>
+                    <root>
+                        <xsl:for-each select="$Parse-Data/Output/Rows/ns6:ONEMOBILE_DATA[1]">
+                            <ns6:ONEMOBILE_DATA>
+                                <ns6:CUSTOMER_ID>
+                                    <xsl:value-of select="psg:removeLeadingChar(tib:trim(ns6:CUSTOMER_ID),&quot;0&quot;)"/>
+                                </ns6:CUSTOMER_ID>
+                                <ns6:ACCOUNT_NO>
+                                    <xsl:value-of select="ns6:ACCOUNT_NO"/>
+                                </ns6:ACCOUNT_NO>
+                                <ns6:ACCOUNT_STATUS>
+                                    <xsl:value-of select="ns6:ACCOUNT_STATUS"/>
+                                </ns6:ACCOUNT_STATUS>
+                                <ns6:CREATED_DATE>
+                                    <xsl:value-of select="tib:parse-date(&quot;yyyyMMdd&quot;,ns6:CREATED_DATE)"/>
+                                </ns6:CREATED_DATE>
+                                <ns6:STATUS_CODE>
+                                    <xsl:value-of select="ns6:STATUS_CODE"/>
+                                </ns6:STATUS_CODE>
+                                <ns6:DESCRIPTION>
+                                    <xsl:value-of select="ns6:DESCRIPTION"/>
+                                </ns6:DESCRIPTION>
+                                <xsl:if test="ns6:UNIQUE_ID">
+                                    <ns6:UNIQUE_ID>
+                                        <xsl:value-of select="ns6:UNIQUE_ID"/>
+                                    </ns6:UNIQUE_ID>
+                                </xsl:if>
+                            </ns6:ONEMOBILE_DATA>
+                        </xsl:for-each>
+                    </root>
+                </pd:inputBindings>
+            </pd:activity>
+            <pd:activity name="Generate Error">
+                <pd:type>com.tibco.pe.core.GenerateErrorActivity</pd:type>
+                <pd:resourceType>ae.activities.throw</pd:resourceType>
+                <pd:x>724</pd:x>
+                <pd:y>226</pd:y>
+                <config>
+                    <faultName/>
+                </config>
+                <pd:inputBindings>
+                    <ns4:ActivityInput>
+                        <message>
+                            <xsl:value-of select="&quot;Incomplete Column&quot;"/>
+                        </message>
+                        <messageCode>
+                            <xsl:value-of select="&quot;PROCESS FILE&quot;"/>
+                        </messageCode>
+                    </ns4:ActivityInput>
+                </pd:inputBindings>
+            </pd:activity>
+        </pd:group>
+    </pd:group>
+    <pd:activity name="Create Success File">
+        <pd:type>com.tibco.plugin.file.FileCreateActivity</pd:type>
+        <pd:resourceType>ae.activities.FileCreateActivity</pd:resourceType>
+        <pd:x>96</pd:x>
+        <pd:y>485</pd:y>
+        <config>
+            <overwrite>true</overwrite>
+            <createMissingDirectories>true</createMissingDirectories>
+        </config>
+        <pd:inputBindings>
+            <ns3:CreateActivityInputClass>
+                <fileName>
+                    <xsl:value-of select="concat($_globalVariables/ns:GlobalVariables/FileManagement/BasePath,$_globalVariables/ns:GlobalVariables/FileManagement/Separator,$_globalVariables/ns:GlobalVariables/FileManagement/InProcessPath, $_globalVariables/ns:GlobalVariables/FileManagement/Separator,$Start/root/SuccessFilename)"/>
+                </fileName>
+            </ns3:CreateActivityInputClass>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>Start</pd:from>
+        <pd:to>Remove File</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Remove File</pd:from>
+        <pd:to>Log InProcess</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Log InProcess</pd:from>
+        <pd:to>Move to InProcess Folder (Data)</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Remove InProcess File</pd:from>
+        <pd:to>Move to Output Folder</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Parse Success File</pd:from>
+        <pd:to>Remove InProcess File</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Move to Output Folder</pd:from>
+        <pd:to>Grouping</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Grouping</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Move to InProcess Folder (Data)</pd:from>
+        <pd:to>Create Success File</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Validate File</pd:from>
+        <pd:to>Parse Success File</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Create Success File</pd:from>
+        <pd:to>Validate File</pd:to>
+        <pd:lineType>S-Shaped</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:iconImage>/9j/4AAQSkZJRgABAQEAYABgAAD//gA8Q1JFQVRPUjogZ2QtanBlZyB2MS4wICh1c2luZyBJSkcg&#xD;
+SlBFRyB2NjIpLCBxdWFsaXR5ID0gNzUKAP/bAEMAAgEBAgEBAgICAgICAgIDBQMDAwMDBgQEAwUH&#xD;
+BgcHBwYHBwgJCwkICAoIBwcKDQoKCwwMDAwHCQ4PDQwOCwwMDP/bAEMBAgICAwMDBgMDBgwIBwgM&#xD;
+DAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDP/AABEIAEsA&#xD;
+SwMBIgACEQEDEQH/xAAfAAABBQEBAQEBAQAAAAAAAAAAAQIDBAUGBwgJCgv/xAC1EAACAQMDAgQD&#xD;
+BQUEBAAAAX0BAgMABBEFEiExQQYTUWEHInEUMoGRoQgjQrHBFVLR8CQzYnKCCQoWFxgZGiUmJygp&#xD;
+KjQ1Njc4OTpDREVGR0hJSlNUVVZXWFlaY2RlZmdoaWpzdHV2d3h5eoOEhYaHiImKkpOUlZaXmJma&#xD;
+oqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4eLj5OXm5+jp6vHy8/T19vf4+fr/&#xD;
+xAAfAQADAQEBAQEBAQEBAAAAAAAAAQIDBAUGBwgJCgv/xAC1EQACAQIEBAMEBwUEBAABAncAAQID&#xD;
+EQQFITEGEkFRB2FxEyIygQgUQpGhscEJIzNS8BVictEKFiQ04SXxFxgZGiYnKCkqNTY3ODk6Q0RF&#xD;
+RkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqCg4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqy&#xD;
+s7S1tre4ubrCw8TFxsfIycrS09TV1tfY2dri4+Tl5ufo6ery8/T19vf4+fr/2gAMAwEAAhEDEQA/&#xD;
+AP37++tJ5a+lEf3KGfGR3x6UAOA20U1G3L+leN/txftl+Hv2LvgrfeINTurGXXLhfs+iaVJOqTan&#xD;
+csQqhV+8UTO9yBwqnuQDnWrQpQdSo7JbndluW4nH4qGDwkXKpNpJLu/yS3beiV29EeqeKPGWkeCN&#xD;
+Le+1rVNP0mzjBLT3lwkMYwMnliBXOfCX9ovwR8dr3Vrfwf4k03xBJobol79kYssJcEr82AGB2typ&#xD;
+IyCM5Ffil400f41/tDXN34z8Uab4htdPu5vtDaz4qd9Ptykjbs2kNxiSSIKcolvGU2gBeMV3HwF/&#xD;
+af1D9kXT9WsfCGtTNqHiQwRXV5PFGZZjHv2LDFhtmTI3GXY8c16HB/D+fcR1faYPDqnh4uznOVlt&#xD;
+dW6t7XsnZbvYrxg4g4A8O8D9Vx+ZSxeaTScKGHgpJe8lJzk3yxVuZR5pQlJrSDSlb9qqK+df2Ivi&#xD;
+j4i079n+O5+I1xrMevXV9NLDBqoZb2O3ITYHV/nXneQHAIB6DivevDniCLxJosd9HlYZckbvYkH+&#xD;
+VeTiMzy6Oa1cow2JhWqU735HzKyaTd1pu1pe58/keMr5hlVDNKtCVFVYp8s1ZxbV7PzNCio7a6jv&#xD;
+IRJDIksbZwyNuBxweakrqPQTTV0YHxK+J3h/4M+B77xJ4p1ey0PQ9NVWub27k2RRbmCKM9yzsqhR&#xD;
+klmAAJNeKa7+3RqfiiGX/hX/AMNfEmsW5j8yLXfErL4b0Pbg/vN0wa8kRcZJjtWG3oTVP/gptq1x&#xD;
+4V8E/C3XoZGjh0b4k6I9wf4QkzyW2T9GnX8cV8J+A9Ivv+ChXxf8fz+PvGV1peg+Hb65lXSkJS1S&#xD;
+1jmKkbdwUuqgDfISq4yySbvl5Yxr18Q8PSdrK7eyS095u0na7UUlCTv5Xt9VRw+X4HKlm2OjzJvl&#xD;
+6yvJt2hCHPRTlywlUcp16cFHSzlZT9r+M37flxDqLWHir4yTx3gQmbwx8K9JjeZhwfmvrkST4HGX&#xD;
+QW3UcjpXl3gLxx44+I11JqXwd+Eun+Go5vlfxX4jnfW9WYnni8u5ZM8Ho9yB1wrHCnc8IP8AD34f&#xD;
+QXGk/Cr4byeNprGUCS/1IRCyjlUZBeWYQ2ayDOcBA/PGMkHuNY+G/wASfjCTe+OvGTaHpUgwYdJZ&#xD;
+rdj7efco0xGcfcthuGQGz8w9WplOCwVTkzCr+9X2NXNX6OEXOrFPpKcsPF+R+f1PFLG5lRdPh3C8&#xD;
+1J6c65XSbW0lNxo4aXnF0sdKy0lJM8j8f/BS18OJNqHxs+M19rGpXsweW00pkLzNu4hRnjVY/mbG&#xD;
+2KAszEAu21Meofs56H4T+H8c2oeFfhrNo2rMNllFdWz3ethMBmup5J2eS33HARSYxjcwQL5ZPSeE&#xD;
+PhR4K+BudQsNPt7W9mj2yaldmSFpFwRgMxe8lBBIOH2HvsBUHG1L43yeM92h+CdHvfFU0BOLa1hF&#xD;
+tpluepZsMkaHJ+9NKoOfuk818hxhxrQxuX/6u4WrUUHo4U2pVJK95R5IN06bb+KU6taUk3s3c8XK&#xD;
+8oo5Zmn+sWfex9vU1ScW3JpJLlbj7WqoJJRp4ehSjCMUlHkjyln4l/F7UPC1lPcapq9jZXSjMWn2&#xD;
+ji6uc54818eXGOv3TJngDknHjXjz9t3xV40gsfDK61ql1FNmG00rT02tck8kbIhvlPc7t2M9hxXU&#xD;
++K/gFBrEsV38T/Gn2Wzhy8WheH2Gc/7U2wqAccrDHuwPv5IzLpvxc0r4TaTcab8O/Dum+Fbe5UR3&#xD;
+F0qFry8A+60khYvIRyQXYgE529c/mP8Aq1hMAvaVpLBwaty8znVmt9bW0dlppFWV03q/wnxw4ox+&#xD;
+dY1rijOPqOXR+DD0/wCNVX88qUHe0npH2jajFLmipOR9vfsD6XeeHv2XvD9hqlvLYatbtcvd2kx/&#xD;
+e2xkuZXQMuTtJjZDj39c17LX5mfsvahqnxF/aj8GrLdXd1MmoC4ZjJjYkatI2B0AwpyB1r9Mwc1+&#xD;
+lcJ5pQxeD9nhYyVOlaCcrXajFau2l9j9G8FeM8Fn+RezyyhOnh8Jy0IOo1zTUKcPekoq0XZq6Tff&#xD;
+S9l88/8ABVrw1P4k/YB+Iklru+1aBb2viKHaPm3adeQX2PbP2cgnsCa/MX4aavLoPxg+PVjYyMkc&#xD;
+7a69uV43R/b45YyPYxIx+ma/Zz4x+Bo/if8ACPxR4bmRJI/EGk3WnMr/AHSJoXj5/wC+q/DH4H+I&#xD;
+LgeP7qS6bdd634L2XuRy96mhyJN+dyHNfZ8O1vY8RYdy2mpJ/wDbkZVF98oxR+7cSYT694b5pTj8&#xD;
+WHlTqL/uLVoUG/lTlUfyZ93fsl+JbLSPgP4Wsobe3t/L0618q5VBvtt9r9pnkX1Z5TKxwRl3LE5z&#xD;
+mKfx14s+Jt9cN4L0eG2s4ZDC/iDVLvasbjh9kpVnLchf3KDJO0sOQOG/ZOvpb/4H6Cr/AH/s0kAA&#xD;
+PQRyXsK/+ORr+dYvw6+Jep+F/wBm24021upIXuvEl7Y3Ei/fVV2ykK3VSQQMjnaxHGa/IuIG6mfY&#xD;
+zLcxqSVCh7eU4xdueccRVhJyf2ubl6u19dLtn5bxBxNSybhjA5pBunSlhnVlKCi5qFKhh5Rp0+ZN&#xD;
+Qc/av3o8s04x5Zw1Z2Gu+E/B3g6/kuPGHiC++IWs7t7WfNtYkjnDwK7tIh6YndkYZO1hlTj+Kv2h&#xD;
+9SvdMTTdIgtPDujwjbFZ2UKRxoPZFAReM8YOASMkE587lumkLY43Ek+5PNRkZ6818hX4uqUqf1fK&#xD;
+accPT/u6yfrJ6/dr5n8D8VfSCz/MZVIZOlg4T+KUW515/wCOvO82+zXLJbczRPdapNeztLJJNNM3&#xD;
+LSSuXkc+pZuSfc1Afm6802R9v1qKS42Z+bt6V8pOc6knObbb3b1Z+F1alStUlWrScpSd222233be&#xD;
+rZ9Nf8EvPB/9tfHXVNWkjDQaLpLqrc5SaaRVUj/tmsw/Gvvmvln/AIJT+EDYfCLXdedfm1nU/JiY&#xD;
+jlo4EA4Ppvdx9Qa+pq/fuB8H9Xyem3vO8n83p/5Kkf6ffR7yN5bwNg1NWlV5qj/7fk+X/wAkUQPN&#xD;
+fkf8c/8Agmn46/Zv8f8AjD4mapfeG08C2Pi55LGG2lkkujpmoalgbwVCx+RFclDy27bkY7/rhXM/&#xD;
+GT4SaJ8ePhZr3g7xHbtdaJ4is3sruNG2vtYfeU9mU4YHnBA619pg/ZQxtDFVb2pyT07bP106H7hi&#xD;
+MwxsMox2WYNpfWabg+ZXWmsddba9Urrda2Z+Zf7Dt8brwf8AY2z/AKPdXUeP+Ah/5ymubtrX+y/C&#xD;
+fiSzPytb+PtRcKeyPp9iV/XfX1l8XP2ZPBv7Id74Jj8Lae2m6VqL3tpfXdxM00lxOYhMkk0znrth&#xD;
+dVGQBkgAV8qeOkm0Xx/42sLi3urVzq9rqCRXMLwSBZrQ4OxgGAIRSMjkYPpX4zx5mFPE8X5liMNF&#xD;
+qE4TevRznOpra6u+a+5+F+LmT18q8JcLh8a1KpTpzotrbSilpdJ7UUtjKqGa6VBwf/rVVvdVWJWy&#xD;
+20AZJziu0+AX7MHjr9qC9VvDem/ZdCz+812/VorAYO0iI4zOwIIIjyAQQzKa/O8HgK+KqKlh4uUn&#xD;
+0X9aLzeh/nDw/wAL5nneLjgssoyq1H0ivxb2S7ttJdWcLqGtxWEe6STaMhfdiTgD3J6ADvXvH7O3&#xD;
+/BOjxv8AHY2+peJPtHgfwvLtkVpo1OqX0R6mKFs+TxwGmXIOD5bjr9bfsy/sA+Cf2dTa6nJD/wAJ&#xD;
+R4tgG7+2dQhBa3cjBNtFkrbggsMqS+GILsK90r9WyPw9hC1XMnzP+VbfN7v0Wnmz+0vDn6L+DwnL&#xD;
+jeKZe1nv7KL9xf4pLWXorLzkjnfhP8LdH+C3w80vwvoMElvpWkxGOFXcySMWZnd2Y9WZ2Zie5Y9K&#xD;
+6Kiiv0unTjTioQVklZJbJLZI/rTD4elQpRoUYqMIpJJKySSskktklokFH3RQxwpoY4U1ZsV7vTbb&#xD;
+UzCbi3huDbyCWLzED+U4BAZc9GAJGRzya/Pn9vv9nLx/4x/bbuJPCvhPVNcsPF2h2UwvoE22tvcW&#xD;
+7ywuksrYjQ7GRvmYEjGAT0/Q6mr95q8vNspp4+h7Co2le+lr7NW1v0Z8nxpwjheJcu/szGSlGDab&#xD;
+cbX2aaV00rptXtpe58jfs3/8EqNE8IS2usfEi6t/FmrxlJk0u33rpNpIDnnIV7nHT94qoR1j6Y+t&#xD;
+7Ozh060jt7eGOCCFBHHHGoVI1AwAAOAAOwqSitMuyvC4Gn7LCwUV17v1e7OrhnhPKOH8KsHlFCNK&#xD;
+HW28n3lJ6yfm2/LQKKKK9A+iCiiigD//2Q==&#xD;
+</pd:iconImage>
+</pd:ProcessDefinition>
